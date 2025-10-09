@@ -1,29 +1,14 @@
-/**
- * PAW CONNECT - SEARCH FUNCTIONALITY
- * Système de recherche d'animaux avec API Fetch
- */
-
-// Configuration
 const SEARCH_API_URL = '/backend/search/animals.php';
 const DEBOUNCE_DELAY = 500;
 
-// Cache pour optimiser les requêtes
 const searchCache = new Map();
-
-// État de la recherche
 let currentSearchParams = {};
 
-/**
- * Initialisation
- */
 document.addEventListener('DOMContentLoaded', function() {
     initSearchListeners();
     performInitialSearch();
 });
 
-/**
- * Initialiser les écouteurs d'événements
- */
 function initSearchListeners() {
     const searchInput = document.getElementById('searchInput');
     const filterSpecies = document.getElementById('filterSpecies');
@@ -35,18 +20,15 @@ function initSearchListeners() {
     const resetBtn = document.getElementById('resetFilters');
     const clearBtn = document.getElementById('clearSearch');
     
-    // Recherche avec debounce
     if (searchInput) {
         searchInput.addEventListener('input', PawConnect.debounce(performSearch, DEBOUNCE_DELAY));
     }
     
-    // Filtres instantanés
     if (filterSpecies) filterSpecies.addEventListener('change', performSearch);
     if (filterSex) filterSex.addEventListener('change', performSearch);
     if (filterAge) filterAge.addEventListener('change', performSearch);
     if (sortBy) sortBy.addEventListener('change', performSearch);
     
-    // Filtres avec debounce
     if (filterRace) {
         filterRace.addEventListener('input', PawConnect.debounce(performSearch, DEBOUNCE_DELAY));
     }
@@ -54,7 +36,6 @@ function initSearchListeners() {
         filterColor.addEventListener('input', PawConnect.debounce(performSearch, DEBOUNCE_DELAY));
     }
     
-    // Boutons
     if (clearBtn) {
         clearBtn.addEventListener('click', clearSearch);
     }
@@ -63,38 +44,27 @@ function initSearchListeners() {
     }
 }
 
-/**
- * Recherche initiale au chargement
- */
 async function performInitialSearch() {
     await performSearch();
 }
 
-/**
- * Effectuer la recherche
- */
 async function performSearch() {
-    // Récupérer les paramètres de recherche
     const params = getSearchParams();
     
-    // Vérifier le cache
     const cacheKey = JSON.stringify(params);
     if (searchCache.has(cacheKey)) {
         displayResults(searchCache.get(cacheKey));
         return;
     }
     
-    // Afficher le loader
     showLoader();
     
     try {
-        // Construire l'URL avec les paramètres
         const url = new URL(SEARCH_API_URL, window.location.origin);
         Object.keys(params).forEach(key => {
             if (params[key]) url.searchParams.append(key, params[key]);
         });
         
-        // Effectuer la requête
         const response = await fetch(url);
         
         if (!response.ok) {
@@ -103,10 +73,8 @@ async function performSearch() {
         
         const data = await response.json();
         
-        // Mettre en cache
         searchCache.set(cacheKey, data);
         
-        // Afficher les résultats
         if (data.success) {
             displayResults(data);
         } else {
@@ -119,9 +87,6 @@ async function performSearch() {
     }
 }
 
-/**
- * Récupérer les paramètres de recherche
- */
 function getSearchParams() {
     const params = {
         q: document.getElementById('searchInput')?.value.trim() || '',
@@ -137,9 +102,6 @@ function getSearchParams() {
     return params;
 }
 
-/**
- * Afficher le loader
- */
 function showLoader() {
     const loader = document.getElementById('loadingIndicator');
     const results = document.getElementById('resultsGrid');
@@ -150,19 +112,14 @@ function showLoader() {
     if (noResults) noResults.style.display = 'none';
 }
 
-/**
- * Afficher les résultats
- */
 function displayResults(data) {
     const loader = document.getElementById('loadingIndicator');
     const resultsGrid = document.getElementById('resultsGrid');
     const noResults = document.getElementById('noResults');
     const resultsCount = document.getElementById('resultsCount');
     
-    // Masquer le loader
     if (loader) loader.style.display = 'none';
     
-    // Afficher le nombre de résultats
     if (resultsCount) {
         const count = data.animals?.length || 0;
         resultsCount.textContent = count === 0 
@@ -170,14 +127,12 @@ function displayResults(data) {
             : `${count} résultat${count > 1 ? 's' : ''} trouvé${count > 1 ? 's' : ''}`;
     }
     
-    // Si aucun résultat
     if (!data.animals || data.animals.length === 0) {
         if (resultsGrid) resultsGrid.style.display = 'none';
         if (noResults) noResults.style.display = 'block';
         return;
     }
     
-    // Afficher les résultats
     if (noResults) noResults.style.display = 'none';
     if (resultsGrid) {
         resultsGrid.style.display = 'flex';
@@ -190,14 +145,10 @@ function displayResults(data) {
     }
 }
 
-/**
- * Créer une carte animal
- */
 function createAnimalCard(animal) {
     const col = document.createElement('div');
     col.className = 'col-md-4 col-lg-3';
     
-    // Icônes selon l'espèce
     const speciesIcons = {
         'chien': 'fa-dog',
         'chat': 'fa-cat',
@@ -208,14 +159,12 @@ function createAnimalCard(animal) {
     
     const icon = speciesIcons[animal.species?.toLowerCase()] || 'fa-paw';
     
-    // Badge de statut
     const stateBadge = animal.state === 'disponible' 
         ? '<span class="badge-available">Disponible</span>'
         : animal.state === 'adopte' 
         ? '<span class="badge-available" style="background:#EF4444">Adopté</span>'
         : '<span class="badge-available" style="background:#F59E0B">En attente</span>';
     
-    // Image par défaut si manquante
     const imageSrc = animal.image || '/assets/images/animals/placeholder.jpg';
     
     col.innerHTML = `
@@ -250,17 +199,11 @@ function createAnimalCard(animal) {
     return col;
 }
 
-/**
- * Tronquer le texte
- */
 function truncateText(text, maxLength) {
     if (text.length <= maxLength) return text;
     return text.substring(0, maxLength).trim() + '...';
 }
 
-/**
- * Afficher une erreur
- */
 function showError(message) {
     const loader = document.getElementById('loadingIndicator');
     const resultsGrid = document.getElementById('resultsGrid');
@@ -283,9 +226,6 @@ function showError(message) {
     PawConnect.showToast(message, 'error');
 }
 
-/**
- * Effacer la recherche
- */
 function clearSearch() {
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
@@ -295,9 +235,6 @@ function clearSearch() {
     }
 }
 
-/**
- * Réinitialiser tous les filtres
- */
 function resetAllFilters() {
     document.getElementById('searchInput').value = '';
     document.getElementById('filterSpecies').value = '';
@@ -307,32 +244,15 @@ function resetAllFilters() {
     document.getElementById('filterColor').value = '';
     document.getElementById('sortBy').value = 'recent';
     
-    // Vider le cache
     searchCache.clear();
     
-    // Relancer la recherche
     performSearch();
     
     PawConnect.showToast('Filtres réinitialisés', 'info');
 }
 
-/**
- * Exporter les résultats (fonctionnalité avancée)
- */
-function exportResults() {
-    const params = getSearchParams();
-    const url = new URL('/backend/search/export.php', window.location.origin);
-    Object.keys(params).forEach(key => {
-        if (params[key]) url.searchParams.append(key, params[key]);
-    });
-    
-    window.location.href = url.toString();
-}
-
-// Exposer les fonctions au scope global si nécessaire
 window.SearchModule = {
     performSearch,
     clearSearch,
-    resetAllFilters,
-    exportResults
+    resetAllFilters
 };
