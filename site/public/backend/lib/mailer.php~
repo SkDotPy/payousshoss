@@ -1,0 +1,37 @@
+<?php
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+require_once __DIR__ . '/../../../vendor/autoload.php';
+require_once __DIR__ . '/../../config.php';
+
+function send_mail(string $to, string $toName, string $subject, string $htmlBody, string $textBody = ''): bool {
+    $mail = new PHPMailer(true);
+    try {
+        $mail->isSMTP();
+        $mail->Host       = SMTP_HOST;
+        $mail->Port       = SMTP_PORT;
+        if (SMTP_SECURE === 'ssl') {
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+        } else {
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        }
+        $mail->SMTPAuth   = true;
+        $mail->Username   = SMTP_USER;
+        $mail->Password   = SMTP_PASS;
+
+        $mail->CharSet    = 'UTF-8';
+        $mail->setFrom(SMTP_FROM, SMTP_FROM_NAME);
+        $mail->addAddress($to, $toName);
+
+        $mail->isHTML(true);
+        $mail->Subject = $subject;
+        $mail->Body    = $htmlBody;
+        $mail->AltBody = $textBody ?: strip_tags(str_replace(['<br>','<br/>','<br />'], "\n", $htmlBody));
+
+        return $mail->send();
+    } catch (Exception $e) {
+        error_log('MAIL ERROR: ' . $e->getMessage());
+        return false;
+    }
+}
