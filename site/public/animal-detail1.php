@@ -258,24 +258,24 @@ try {
                             </div>
                         </div>
 
-                        <!-- Informations santé (VRAIES DONNÉES) -->
+                        <!-- Informations santé (placeholder - à adapter selon vos données) -->
                         <div class="mb-4">
                             <h5>Santé & Vaccination</h5>
                             <div class="list-group">
                                 <div class="list-group-item">
-                                    <i class="fas fa-<?php echo !empty($animal['vaccinated']) ? 'check-circle text-success' : 'times-circle text-danger'; ?> me-2"></i>
+                                    <i class="fas fa-check-circle text-success me-2"></i>
                                     Vacciné
                                 </div>
                                 <div class="list-group-item">
-                                    <i class="fas fa-<?php echo !empty($animal['sterilized']) ? 'check-circle text-success' : 'times-circle text-danger'; ?> me-2"></i>
+                                    <i class="fas fa-check-circle text-success me-2"></i>
                                     Stérilisé
                                 </div>
                                 <div class="list-group-item">
-                                    <i class="fas fa-<?php echo !empty($animal['good_with_kids']) ? 'check-circle text-success' : 'times-circle text-danger'; ?> me-2"></i>
+                                    <i class="fas fa-check-circle text-success me-2"></i>
                                     Sociable avec les enfants
                                 </div>
                                 <div class="list-group-item">
-                                    <i class="fas fa-<?php echo !empty($animal['good_with_animals']) ? 'check-circle text-success' : 'times-circle text-danger'; ?> me-2"></i>
+                                    <i class="fas fa-check-circle text-success me-2"></i>
                                     Sociable avec les autres animaux
                                 </div>
                             </div>

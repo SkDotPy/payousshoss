@@ -7,11 +7,56 @@ session_start();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rechercher un animal - Paw Connect</title>
-    
+
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Custom CSS -->
     <link rel="stylesheet" href="assets/css/main.css">
+
+    <style>
+        .search-hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 0 40px;
+        }
+
+        .search-hero h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .search-filters {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .search-filters .form-label {
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        #loadingIndicator {
+            display: block;
+        }
+
+        #resultsGrid, #noResults {
+            display: none;
+        }
+    </style>
 </head>
 <body>
 
@@ -19,37 +64,58 @@ session_start();
     <nav class="navbar navbar-expand-lg">
         <div class="container">
             <a class="navbar-brand" href="index.php">
-                <i class="fas fa-paw"></i> Paw Connect
+                <i class="fas fa-paw"></i>
+                Paw Connect
             </a>
-            
+
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            
+
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto align-items-center">
-                    <li class="nav-item"><a class="nav-link" href="index.php">Accueil</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="search.php">Adopter</a></li>
-                    <li class="nav-item"><a class="nav-link" href="signalement.php">Signaler</a></li>
-                    <li class="nav-item"><a class="nav-link" href="newsletter.php">Newsletter</a></li>
-                    
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.php">Accueil</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="search.php">Adopter</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="signalement.php">Signaler</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="newsletter.php">Newsletter</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="contact.php">Contact</a>
+                    </li>
+
                     <?php if(isset($_SESSION['user_id'])): ?>
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
                                 <i class="fas fa-user-circle"></i> Mon compte
                             </a>
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="profil.php">Mon profil</a></li>
+                                <li><a class="dropdown-item" href="mes-adoptions.php">Mes adoptions</a></li>
+                                <?php if(isset($_SESSION['is_admin']) && $_SESSION['is_admin']): ?>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="admin/index.php"><i class="fas fa-cog"></i> Administration</a></li>
+                                <?php endif; ?>
+                                <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="logout.php">Déconnexion</a></li>
                             </ul>
                         </li>
                     <?php else: ?>
-                        <li class="nav-item"><a class="btn btn-outline-primary" href="login.php">Connexion</a></li>
+                        <li class="nav-item">
+                            <a class="btn btn-outline-primary" href="login.php">Connexion</a>
+                        </li>
                     <?php endif; ?>
-                    
+
                     <li class="nav-item ms-2">
                         <button class="dark-mode-toggle" id="darkModeToggle">
                             <i class="fas fa-moon"></i>
+                            <span>Dark</span>
                         </button>
                     </li>
                 </ul>
@@ -57,21 +123,22 @@ session_start();
         </div>
     </nav>
 
+    <!-- HERO SECTION -->
+    <section class="search-hero">
+        <div class="container">
+            <h1><i class="fas fa-search me-2"></i> Trouvez votre compagnon</h1>
+            <p class="lead">Recherchez parmi nos animaux disponibles à l'adoption</p>
+        </div>
+    </section>
+
     <!-- SECTION RECHERCHE -->
     <section class="py-5">
         <div class="container">
-            <div class="row mb-4">
-                <div class="col-12">
-                    <h1><i class="fas fa-search me-2"></i> Trouvez votre compagnon</h1>
-                    <p class="lead text-muted">Recherchez parmi nos animaux disponibles à l'adoption</p>
-                </div>
-            </div>
-
             <!-- FILTRES -->
             <div class="search-filters">
                 <div class="row">
                     <div class="col-md-8 mb-3">
-                        <label class="form-label fw-bold">Recherche par nom, race ou description</label>
+                        <label class="form-label">Recherche par nom, race ou description</label>
                         <div class="input-group input-group-lg">
                             <span class="input-group-text"><i class="fas fa-search"></i></span>
                             <input type="text" class="form-control" id="searchInput" placeholder="Ex: Labrador, Max, chat roux...">
@@ -81,9 +148,9 @@ session_start();
                         </div>
                         <small class="form-text text-muted">La recherche se met à jour automatiquement pendant la saisie</small>
                     </div>
-                    
+
                     <div class="col-md-4 mb-3">
-                        <label class="form-label fw-bold">Type d'animal</label>
+                        <label class="form-label">Type d'animal</label>
                         <select class="form-select form-select-lg" id="filterSpecies">
                             <option value="">Tous les animaux</option>
                             <option value="chien">🐕 Chiens</option>
@@ -93,19 +160,19 @@ session_start();
                         </select>
                     </div>
                 </div>
-                
+
                 <div class="row">
                     <div class="col-md-3 mb-3">
-                        <label class="form-label fw-bold">Sexe</label>
+                        <label class="form-label">Sexe</label>
                         <select class="form-select" id="filterSex">
                             <option value="">Tous</option>
                             <option value="male">Mâle</option>
                             <option value="femelle">Femelle</option>
                         </select>
                     </div>
-                    
+
                     <div class="col-md-3 mb-3">
-                        <label class="form-label fw-bold">Âge</label>
+                        <label class="form-label">Âge</label>
                         <select class="form-select" id="filterAge">
                             <option value="">Tous les âges</option>
                             <option value="0-1">Moins d'1 an</option>
@@ -114,18 +181,18 @@ session_start();
                             <option value="7+">Plus de 7 ans</option>
                         </select>
                     </div>
-                    
+
                     <div class="col-md-3 mb-3">
-                        <label class="form-label fw-bold">Race</label>
+                        <label class="form-label">Race</label>
                         <input type="text" class="form-control" id="filterRace" placeholder="Ex: Labrador">
                     </div>
-                    
+
                     <div class="col-md-3 mb-3">
-                        <label class="form-label fw-bold">Couleur</label>
+                        <label class="form-label">Couleur</label>
                         <input type="text" class="form-control" id="filterColor" placeholder="Ex: Roux, Noir">
                     </div>
                 </div>
-                
+
                 <div class="row">
                     <div class="col-12">
                         <button type="button" class="btn btn-outline-secondary" id="resetFilters">
@@ -160,11 +227,11 @@ session_start();
                 <p class="mt-3 text-muted">Recherche en cours...</p>
             </div>
 
-            <div id="resultsGrid" class="row g-4" style="display: none;">
+            <div id="resultsGrid" class="row g-4">
                 <!-- Les cartes animaux seront injectées ici dynamiquement -->
             </div>
 
-            <div id="noResults" class="text-center py-5" style="display: none;">
+            <div id="noResults" class="text-center py-5">
                 <i class="fas fa-search fa-4x text-muted mb-3"></i>
                 <h4>Aucun résultat trouvé</h4>
                 <p class="text-muted">Essayez de modifier vos critères de recherche</p>
@@ -172,10 +239,58 @@ session_start();
         </div>
     </section>
 
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h5>Paw Connect</h5>
+                    <p class="text-muted">Agir ensemble pour protéger et offrir une seconde chance aux animaux en détresse.</p>
+                    <div class="social-links mt-3">
+                        <a href="#" class="me-3"><i class="fab fa-facebook fa-2x"></i></a>
+                        <a href="#" class="me-3"><i class="fab fa-instagram fa-2x"></i></a>
+                        <a href="#"><i class="fab fa-twitter fa-2x"></i></a>
+                    </div>
+                </div>
+
+                <div class="col-md-2 mb-4">
+                    <h5>Navigation</h5>
+                    <a href="index.php">Accueil</a>
+                    <a href="search.php">Adopter</a>
+                    <a href="signalement.php">Signaler</a>
+                    <a href="contact.php">Contact</a>
+                </div>
+
+                <div class="col-md-3 mb-4">
+                    <h5>Informations</h5>
+                    <a href="mentions-legales.php">Mentions légales</a>
+                    <a href="politique-confidentialite.php">Confidentialité</a>
+                    <a href="cgv.php">CGV</a>
+                    <a href="faq.php">FAQ</a>
+                </div>
+
+                <div class="col-md-3 mb-4">
+                    <h5>Contact</h5>
+                    <p class="text-muted mb-1"><i class="fas fa-envelope"></i> contact@pawconnect.fr</p>
+                    <p class="text-muted mb-1"><i class="fas fa-phone"></i> 01 23 45 67 89</p>
+                    <p class="text-muted"><i class="fas fa-map-marker-alt"></i> Paris, France</p>
+                </div>
+            </div>
+
+            <hr style="border-color: rgba(255,255,255,0.1);">
+
+            <div class="text-center py-3">
+                <p class="mb-0 text-muted">&copy; 2025 Paw Connect. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom JS -->
     <script src="assets/js/app.js"></script>
-    <script src="assets/js/search.js"></script>
-    
+
     <script>
     // Système de recherche avec API Fetch
     let searchTimeout = null;
@@ -247,16 +362,16 @@ session_start();
     function createAnimalCard(animal) {
         const col = document.createElement('div');
         col.className = 'col-md-4';
-        
+
         const speciesIcon = {
             'chien': 'fa-dog',
             'chat': 'fa-cat',
             'lapin': 'fa-rabbit',
             'autre': 'fa-paw'
         };
-        
+
         const icon = speciesIcon[animal.species] || 'fa-paw';
-        
+
         col.innerHTML = `
             <div class="card card-animal h-100">
                 <img src="${animal.image || 'assets/images/animals/placeholder.jpg'}" alt="${animal.nom}" class="card-img-top">
@@ -274,7 +389,7 @@ session_start();
                 </div>
             </div>
         `;
-        
+
         return col;
     }
 
