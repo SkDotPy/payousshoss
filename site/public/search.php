@@ -374,12 +374,15 @@ session_start();
 
         col.innerHTML = `
             <div class="card card-animal h-100">
-                <img src="${animal.image || 'assets/images/animals/placeholder.jpg'}" alt="${animal.nom}" class="card-img-top">
+                <img src="${animal.image || 'assets/images/animals/placeholder.jpg'}" 
+                     alt="${animal.nom}" 
+                     class="card-img-top"
+                     onerror="this.src='assets/images/animals/placeholder.jpg'">
                 <span class="badge-available">${animal.state || 'Disponible'}</span>
                 <div class="card-body">
                     <h5 class="card-title">${animal.nom}</h5>
                     <p class="text-muted mb-2">
-                        <i class="fas ${icon}"></i> ${animal.race} • ${animal.age} ans • ${animal.sex === 'male' ? 'Mâle' : 'Femelle'}
+                        <i class="fas ${icon}"></i> ${animal.race} • ${animal.age} • ${animal.sex}
                     </p>
                     <p class="card-text">${animal.description || 'Adorable compagnon à adopter'}</p>
                     <div class="d-flex justify-content-between align-items-center mt-3">

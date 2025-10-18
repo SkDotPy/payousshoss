@@ -89,20 +89,6 @@ $ts = time();
           </div>
         </div>
         <?php endif; ?>
-
-        <?php if ($role === 'refuge'): ?>
-        <div class="card shadow-sm mt-4">
-          <div class="card-body d-flex justify-content-between align-items-center">
-            <div>
-              <h5 class="card-title mb-0">Gérer mes animaux</h5>
-              <div class="text-muted small">Ajouter et gérer vos animaux</div>
-            </div>
-            <a href="/refuge/manage_animals.php" class="btn btn-outline-primary">
-              <i class="fas fa-paw me-1"></i> Ouvrir
-            </a>
-          </div>
-        </div>
-        <?php endif; ?>
       </div>
 
       <div class="col-lg-8">
