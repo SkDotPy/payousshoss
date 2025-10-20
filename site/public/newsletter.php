@@ -19,7 +19,8 @@ session_start();
     <nav class="navbar navbar-expand-lg">
         <div class="container">
             <a class="navbar-brand" href="index.php">
-                <i class="fas fa-paw"></i> Paw Connect
+                <i class="fas fa-paw"></i>
+                Paw Connect
             </a>
             
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -28,27 +29,48 @@ session_start();
             
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto align-items-center">
-                    <li class="nav-item"><a class="nav-link" href="index.php">Accueil</a></li>
-                    <li class="nav-item"><a class="nav-link" href="search.php">Adopter</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="newsletter.php">Newsletter</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.php">Accueil</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="search.php">Adopter</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="signalement.php">Signaler</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="newsletter.php">Newsletter</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="contact.php">Contact</a>
+                    </li>
                     
                     <?php if(isset($_SESSION['user_id'])): ?>
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
                                 <i class="fas fa-user-circle"></i> Mon compte
                             </a>
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="profil.php">Mon profil</a></li>
+                                <li><a class="dropdown-item" href="mes-adoptions.php">Mes adoptions</a></li>
+                                <?php if(isset($_SESSION['is_admin']) && $_SESSION['is_admin']): ?>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="admin/index.php"><i class="fas fa-cog"></i> Administration</a></li>
+                                <?php endif; ?>
+                                <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="logout.php">Déconnexion</a></li>
                             </ul>
                         </li>
                     <?php else: ?>
-                        <li class="nav-item"><a class="btn btn-outline-primary" href="login.php">Connexion</a></li>
+                        <li class="nav-item">
+                            <a class="btn btn-outline-primary" href="login.php">Connexion</a>
+                        </li>
                     <?php endif; ?>
                     
                     <li class="nav-item ms-2">
                         <button class="dark-mode-toggle" id="darkModeToggle">
                             <i class="fas fa-moon"></i>
+                            <span>Dark</span>
                         </button>
                     </li>
                 </ul>
@@ -229,13 +251,44 @@ session_start();
     <footer class="footer">
         <div class="container">
             <div class="row">
-                <div class="col-md-6 mb-4">
+                <div class="col-md-4 mb-4">
                     <h5>Paw Connect</h5>
-                    <p class="text-muted">Agir ensemble pour protéger les animaux</p>
+                    <p class="text-muted">Agir ensemble pour protéger et offrir une seconde chance aux animaux en détresse.</p>
+                    <div class="social-links mt-3">
+                        <a href="#" class="me-3"><i class="fab fa-facebook fa-2x"></i></a>
+                        <a href="#" class="me-3"><i class="fab fa-instagram fa-2x"></i></a>
+                        <a href="#"><i class="fab fa-twitter fa-2x"></i></a>
+                    </div>
                 </div>
-                <div class="col-md-6 text-md-end mb-4">
-                    <p class="text-muted mb-0">&copy; 2025 Paw Connect. Tous droits réservés.</p>
+                
+                <div class="col-md-2 mb-4">
+                    <h5>Navigation</h5>
+                    <a href="index.php">Accueil</a>
+                    <a href="search.php">Adopter</a>
+                    <a href="signalement.php">Signaler</a>
+                    <a href="contact.php">Contact</a>
                 </div>
+                
+                <div class="col-md-3 mb-4">
+                    <h5>Informations</h5>
+                    <a href="mentions-legales.php">Mentions légales</a>
+                    <a href="politique-confidentialite.php">Confidentialité</a>
+                    <a href="cgv.php">CGV</a>
+                    <a href="faq.php">FAQ</a>
+                </div>
+                
+                <div class="col-md-3 mb-4">
+                    <h5>Contact</h5>
+                    <p class="text-muted mb-1"><i class="fas fa-envelope"></i> contact@pawconnect.fr</p>
+                    <p class="text-muted mb-1"><i class="fas fa-phone"></i> 01 23 45 67 89</p>
+                    <p class="text-muted"><i class="fas fa-map-marker-alt"></i> Paris, France</p>
+                </div>
+            </div>
+            
+            <hr style="border-color: rgba(255,255,255,0.1);">
+            
+            <div class="text-center py-3">
+                <p class="mb-0 text-muted">&copy; 2025 Paw Connect. Tous droits réservés.</p>
             </div>
         </div>
     </footer>
